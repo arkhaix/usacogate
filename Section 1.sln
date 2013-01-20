@@ -5,6 +5,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "1.1.1 - Your Ride Is Here",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "1.1.2 - Greedy Gift Givers", "1.1.2 - Greedy Gift Givers\1.1.2 - Greedy Gift Givers.vcxproj", "{05F2269B-CCCE-4846-A05D-3DEF41766517}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "1.1.3 - Friday the Thirteenth", "1.1.3 - Friday the Thirteenth\1.1.3 - Friday the Thirteenth.vcxproj", "{3AE556A5-BB4D-4516-A8B5-67D38A059992}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -19,6 +21,10 @@ Global
 		{05F2269B-CCCE-4846-A05D-3DEF41766517}.Debug|Win32.Build.0 = Debug|Win32
 		{05F2269B-CCCE-4846-A05D-3DEF41766517}.Release|Win32.ActiveCfg = Release|Win32
 		{05F2269B-CCCE-4846-A05D-3DEF41766517}.Release|Win32.Build.0 = Release|Win32
+		{3AE556A5-BB4D-4516-A8B5-67D38A059992}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3AE556A5-BB4D-4516-A8B5-67D38A059992}.Debug|Win32.Build.0 = Debug|Win32
+		{3AE556A5-BB4D-4516-A8B5-67D38A059992}.Release|Win32.ActiveCfg = Release|Win32
+		{3AE556A5-BB4D-4516-A8B5-67D38A059992}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
