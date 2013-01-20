@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "1.1.1 - Your Ride Is Here", "1.1.1 - Your Ride Is Here\1.1.1 - Your Ride Is Here.vcxproj", "{CECA5E93-AC12-40F3-8CC8-A56129842EBF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "1.1.2 - Greedy Gift Givers", "1.1.2 - Greedy Gift Givers\1.1.2 - Greedy Gift Givers.vcxproj", "{05F2269B-CCCE-4846-A05D-3DEF41766517}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -13,6 +15,10 @@ Global
 		{CECA5E93-AC12-40F3-8CC8-A56129842EBF}.Debug|Win32.Build.0 = Debug|Win32
 		{CECA5E93-AC12-40F3-8CC8-A56129842EBF}.Release|Win32.ActiveCfg = Release|Win32
 		{CECA5E93-AC12-40F3-8CC8-A56129842EBF}.Release|Win32.Build.0 = Release|Win32
+		{05F2269B-CCCE-4846-A05D-3DEF41766517}.Debug|Win32.ActiveCfg = Debug|Win32
+		{05F2269B-CCCE-4846-A05D-3DEF41766517}.Debug|Win32.Build.0 = Debug|Win32
+		{05F2269B-CCCE-4846-A05D-3DEF41766517}.Release|Win32.ActiveCfg = Release|Win32
+		{05F2269B-CCCE-4846-A05D-3DEF41766517}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
