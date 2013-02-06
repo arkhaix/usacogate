@@ -18,9 +18,9 @@ using namespace std;
 
 struct State
 {
-	char Depth;
-	char Path[36];
-	char Clocks[9];
+	int Depth;
+	int Path[36];
+	int Clocks[9];
 
 	State()
 	{
@@ -140,11 +140,7 @@ struct State
 		res.Depth++;
 		return res;
 	}
-
-	static set<long long> Visited;
 };
-
-set<long long> State::Visited;
 
 bool StateByPath(const State& a, const State& b)
 {
@@ -160,82 +156,64 @@ bool StateByPath(const State& a, const State& b)
 	return false;
 }
 
-State startState;
-
-bool Success(int* testClocks)
+vector<State> solutions;
+set<int> visited;
+void Dfs(int maxDepth, State& curState)
 {
-	int total = 0;
-	for(int i=0;i<9;i++)
-		total += testClocks[i];
+	if(curState.Depth > maxDepth)
+		return;
 
-	return total == (12*9);
-}
-
-string Go()
-{
-	queue<State>* heapStates = new queue<State>();
-	queue<State>& states = *heapStates;
-	states.push(startState);
-
-	vector<State> solutions;
-
-	while(solutions.empty() && !states.empty())
+	if(curState.isSolved())
 	{
-		State curState = states.front();
-		states.pop();
-
-		if(State::Visited.find(curState.ToKey()) != State::Visited.end())
-			continue;
-
-		State::Visited.insert(curState.ToKey());
-
-		State nextState = curState.Move1();
-		states.push(nextState);
-		if(nextState.isSolved())
-			solutions.push_back(nextState);
-
-		nextState = curState.Move2();
-		states.push(nextState);
-		if(nextState.isSolved())
-			solutions.push_back(nextState);
-
-		nextState = curState.Move3();
-		states.push(nextState);
-		if(nextState.isSolved())
-			solutions.push_back(nextState);
-
-		nextState = curState.Move4();
-		states.push(nextState);
-		if(nextState.isSolved())
-			solutions.push_back(nextState);
-
-		nextState = curState.Move5();
-		states.push(nextState);
-		if(nextState.isSolved())
-			solutions.push_back(nextState);
-
-		nextState = curState.Move6();
-		states.push(nextState);
-		if(nextState.isSolved())
-			solutions.push_back(nextState);
-
-		nextState = curState.Move7();
-		states.push(nextState);
-		if(nextState.isSolved())
-			solutions.push_back(nextState);
-
-		nextState = curState.Move8();
-		states.push(nextState);
-		if(nextState.isSolved())
-			solutions.push_back(nextState);
-
-		nextState = curState.Move9();
-		states.push(nextState);
-		if(nextState.isSolved())
-			solutions.push_back(nextState);
+		solutions.push_back(curState);
+		return;
 	}
 
-	State::Visited.clear();
+	int key = curState.ToKey();
+	set<int>::iterator keyIter = visited.find(key);
+
+	if(keyIter != visited.end())
+		return;
+
+	visited.insert(key);
+
+	State nextState = curState.Move1();
+	Dfs(maxDepth, nextState);
+
+	nextState = curState.Move2();
+	Dfs(maxDepth, nextState);
+
+	nextState = curState.Move3();
+	Dfs(maxDepth, nextState);
+
+	nextState = curState.Move4();
+	Dfs(maxDepth, nextState);
+
+	nextState = curState.Move5();
+	Dfs(maxDepth, nextState);
+
+	nextState = curState.Move6();
+	Dfs(maxDepth, nextState);
+
+	nextState = curState.Move7();
+	Dfs(maxDepth, nextState);
+
+	nextState = curState.Move8();
+	Dfs(maxDepth, nextState);
+
+	nextState = curState.Move9();
+	Dfs(maxDepth, nextState);
+}
+
+string Go(State startState)
+{
+	int maxDepth = 0;
+	while(solutions.empty())
+	{
+		visited.clear();
+		maxDepth++;
+		Dfs(maxDepth, startState);
+	}
 
 	sort(solutions.begin(), solutions.end(), StateByPath);
 	State bestSolution = solutions.front();
@@ -248,8 +226,6 @@ string Go()
 			res += " ";
 	}
 
-	delete heapStates;
-
 	return res;
 }
 
@@ -257,6 +233,8 @@ int main()
 {
 	FILE *fin  = fopen("clocks.in", "r");
 	FILE *fout = fopen("clocks.out", "w");
+
+	State startState;
 
 	for(int i=0;i<3;i++)
 	{
@@ -266,7 +244,7 @@ int main()
 			startState.Clocks[(i*3)+j] = clock[j] % 12;
 	}
 
-	string res = Go();
+	string res = Go(startState);
 
 	fprintf(fout, "%s\n", res.c_str());
 
