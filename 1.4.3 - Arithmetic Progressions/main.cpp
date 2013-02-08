@@ -40,49 +40,45 @@ int main()
 	fscanf(fin, "%d\n", &progressionLength);
 	fscanf(fin, "%d\n", &bisquareLimit);
 
-	vector<int> bisquares;
-	set<int> bisquaresSet;
+	set<int> bisquares;
+	int maxBisquare = -1;
 
 	for(int p=0;p<=bisquareLimit;p++)
 		for(int q=0;q<=bisquareLimit;q++)
-			bisquaresSet.insert((p*p)+(q*q));
+		{
+			maxBisquare = (p*p)+(q*q);
+			bisquares.insert(maxBisquare);
+		}
 
-	for(set<int>::iterator iter = bisquaresSet.begin(); iter != bisquaresSet.end(); ++iter)
-		bisquares.push_back(*iter);
+	int maxInterval = maxBisquare / (progressionLength-1);
 
-	sort(bisquares.begin(), bisquares.end());
-
-	vector<int> diffs(bisquares.size());
-	diffs[0] = 0;
-	for(int i=1;i<bisquares.size();i++)
-		diffs[i] = bisquares[i]-bisquares[i-1];
-
-	Progression currentProgression;
 	vector<Progression> progressions;
 
-	int run = 1;
-	int res = 0;
-	for(int i=1;i<diffs.size();i++)
+	for(set<int>::iterator iter = bisquares.begin(); iter != bisquares.end(); ++iter)
 	{
-		if(diffs[i] == diffs[i-1])
+		for(int j=1;j<=maxInterval;j++)
 		{
-			run++;
-		}
-		else
-		{
-			run = 1;
-			currentProgression.Start = bisquares[i];
-		}
+			bool found = true;
+			for(int k=1;k<progressionLength;k++)
+			{
+				int nextValue = *iter + (k*j);
+				if(bisquares.find(nextValue) == bisquares.end())
+				{
+					found = false;
+					break;
+				}
+			}
 
-		if(run == progressionLength)
-		{
-			currentProgression.Increment = diffs[i];
-			progressions.push_back(currentProgression);
-
-			run = 1;
-			currentProgression.Start = bisquares[i];
+			if(found == true)
+			{
+				Progression progression;
+				progression.Start = *iter;
+				progression.Increment = j;
+				progressions.push_back(progression);
+			}
 		}
 	}
+
 
 	if(progressions.size() == 0)
 	{
