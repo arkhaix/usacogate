@@ -50,19 +50,31 @@ int main()
 			bisquares.insert(maxBisquare);
 		}
 
+	
+	vector<bool> bsv(125001, false);
+	for(set<int>::iterator iter = bisquares.begin(); iter != bisquares.end(); ++iter)
+		bsv[*iter] = true;
+
 	int maxInterval = maxBisquare / (progressionLength-1);
 
 	vector<Progression> progressions;
 
 	for(set<int>::iterator iter = bisquares.begin(); iter != bisquares.end(); ++iter)
 	{
-		for(int j=1;j<=maxInterval;j++)
+		set<int>::iterator jIter = iter;
+		++jIter;
+		for(; jIter != bisquares.end(); ++jIter)
 		{
+			int j = *jIter - *iter;
 			bool found = true;
+
+			if(*iter + ((progressionLength-1)*j) > 125000)
+				break;
+
 			for(int k=1;k<progressionLength;k++)
 			{
 				int nextValue = *iter + (k*j);
-				if(bisquares.find(nextValue) == bisquares.end())
+				if(bsv[nextValue] == false)
 				{
 					found = false;
 					break;
