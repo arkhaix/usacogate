@@ -21,6 +21,9 @@ using namespace std;
 vector<string> solutions;
 int numSolutions;
 int board[13][13] = {0};
+int colUsed[13] = {0};
+int upDiagonalUsed[26] = {0};
+int downDiagonalUsed[26] = {0};
 int n;
 
 string Save()
@@ -56,33 +59,28 @@ void Go(int depth)
 
 	for(int c=0;c<n;c++)
 	{
-		bool valid = true;
-		for(int i=0;i<n && valid;i++)
-			if(board[i][c]) 
-				valid = false; 
+		if(colUsed[c])
+			continue;
 
-		for(int i=0;(r+i)<n && (c+i)<n && valid;i++)
-			if(board[r+i][c+i])
-				valid = false;
+		int ud = r+c;
+		if(upDiagonalUsed[ud])
+			continue;
 
-		for(int i=0;(r-i)>=0 && (c-i)>=0 && valid;i++)
-			if(board[r-i][c-i])
-				valid = false;
+		int dd = 13+(c-r);
+		if(downDiagonalUsed[dd])
+			continue;
 
-		for(int i=0;(r+i)<n && (c-i)>=0 && valid;i++)
-			if(board[r+i][c-i])
-				valid = false;
+		board[r][c]=1;
+		colUsed[c]=1;
+		upDiagonalUsed[ud]=1;
+		downDiagonalUsed[dd]=1;
 
-		for(int i=0;(r-i)>=0 && (c+i)<n && valid;i++)
-			if(board[r-i][c+i])
-				valid = false;
+		Go(depth+1);
 
-		if(valid)
-		{
-			board[r][c]=1;
-			Go(depth+1);
-			board[r][c]=0;
-		}
+		downDiagonalUsed[dd]=0;
+		upDiagonalUsed[ud]=0;
+		colUsed[c]=0;
+		board[r][c]=0;
 	}
 }
 
