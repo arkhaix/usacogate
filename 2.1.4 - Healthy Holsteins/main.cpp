@@ -23,76 +23,61 @@ vector<int> vitaminReqs;
 int numFeedTypes;
 vector< vector<int> > vitaminsPerFeed;
 
-vector<int> bfs(vector<int> feedsUsed, vector<int> vitaminsNeeded)
+bool NeedsMet(int feedsUsed)
 {
-	bool success = true;
-	for(int i=0; i < vitaminsNeeded.size(); i++)
+	vector<int> vitaminsNeeded = vitaminReqs;
+
+	for(int feedIndex=0;feedIndex<numFeedTypes;feedIndex++)
 	{
-		if(vitaminsNeeded[i] > 0)
+		int feedBit = 1 << feedIndex;
+		if( (feedsUsed & feedBit) == 0 )
+			continue;
+
+		for(int vitaminIndex = 0; vitaminIndex < numVitaminTypes; vitaminIndex++)
+			vitaminsNeeded[vitaminIndex] -= vitaminsPerFeed[feedIndex][vitaminIndex];
+	}
+
+	bool ok = true;
+	for(int vitaminIndex = 0; vitaminIndex < numVitaminTypes; vitaminIndex++)
+	{
+		if(vitaminsNeeded[vitaminIndex] > 0)
 		{
-			success = false;
+			ok = false;
 			break;
 		}
 	}
 
-	if(success == true)
+	return ok;
+}
+
+struct Solution
+{
+	int NumFeedsUsed;
+	int FeedsUsed;
+
+	Solution()
 	{
-		return feedsUsed;
+		NumFeedsUsed = 0;
+		FeedsUsed = 0;
 	}
 
-	int totalVitaminsNeeded = 0;
-	for(int i=0; i < vitaminsNeeded.size(); i++)
-		if(vitaminsNeeded[i] > 0)
-			totalVitaminsNeeded += vitaminsNeeded[i];
-
-	vector<int> res;
-	for(int feedIndex=0; feedIndex < numFeedTypes; feedIndex++)
+	Solution(int feedsUsed)
 	{
-		if( find(feedsUsed.begin(), feedsUsed.end(), feedIndex) != feedsUsed.end() )
-			continue;
+		FeedsUsed = feedsUsed;
 
-		vector<int> potentialVitaminsNeeded = vitaminsNeeded;
-		for(int vitaminIndex=0; vitaminIndex < numVitaminTypes; vitaminIndex++)
-			potentialVitaminsNeeded[vitaminIndex] -= vitaminsPerFeed[feedIndex][vitaminIndex];
-
-		int totalPotentialVitaminsNeeded = 0;
-		for(int vitaminIndex=0; vitaminIndex < numVitaminTypes; vitaminIndex++)
-			if(potentialVitaminsNeeded[vitaminIndex] > 0)
-				totalPotentialVitaminsNeeded += potentialVitaminsNeeded[vitaminIndex];
-
-		if(totalPotentialVitaminsNeeded < totalVitaminsNeeded)
-		{
-			feedsUsed.push_back(feedIndex);
-			vector<int> potentialResult = bfs(feedsUsed, potentialVitaminsNeeded);
-			feedsUsed.pop_back();
-			bool better = false;
-
-			if(res.size() == 0 || potentialResult.size() < res.size())
-			{
-				sort(potentialResult.begin(), potentialResult.end());
-				better = true;
-			}
-			else if(potentialResult.size() > 0 && potentialResult.size() == res.size())
-			{
-				sort(potentialResult.begin(), potentialResult.end());
-				for(int i=0;i<potentialResult.size();i++)
-				{
-					if(potentialResult[i] < res[i])
-					{
-						better = true;
-						break;
-					}
-					else if(potentialResult[i] > res[i])
-						break;
-				}
-			}
-
-			if(better == true)
-				res = potentialResult;
-		}
+		NumFeedsUsed = 0;
+		for(int i=0;i<numFeedTypes;i++)
+			if(FeedsUsed & (1<<i))
+				NumFeedsUsed++;
 	}
+};
 
-	return res;
+bool operator<(const Solution& lhs, const Solution& rhs)
+{
+	if(lhs.NumFeedsUsed != rhs.NumFeedsUsed)
+		return lhs.NumFeedsUsed < rhs.NumFeedsUsed;
+
+	return lhs.FeedsUsed < rhs.FeedsUsed;
 }
 
 int main() 
@@ -123,12 +108,24 @@ int main()
 		vitaminsPerFeed.push_back(vitaminsThisFeed);
 	}
 
-	vector<int> empty;
-	vector<int> res = bfs(empty, vitaminReqs);
+	Solution bestSolution((1<<(numFeedTypes+1))-1);
 
-	fprintf(fout, "%d", res.size());
-	for(int i=0;i<res.size();i++)
-		fprintf(fout, " %d", res[i]+1);
+	for(int feedsUsed = 0; feedsUsed < (1<<numFeedTypes); feedsUsed++)
+	{
+		Solution solution(feedsUsed);
+		if(bestSolution < solution)
+			continue;
+
+		if(NeedsMet(feedsUsed) == false)
+			continue;
+
+		bestSolution = solution;
+	}
+
+	fprintf(fout, "%d", bestSolution.NumFeedsUsed);
+	for(int i=0;i<numFeedTypes;i++)
+		if(bestSolution.FeedsUsed & (1<<i))
+			fprintf(fout, " %d", i+1);
 	fprintf(fout, "\n");
 
 	fclose(fout);
