@@ -21,41 +21,42 @@ int numCodewords;
 int numBits;
 int minDistance;
 
-vector<int> solution;
-
-bool dfs(int depth, int ones, int zeroes, int start)
+bool dfs(vector<int>& solution, int start)
 {
-	if(depth == numCodewords)
+	if(solution.size() == numCodewords)
 		return true;
 
 	for(int i=start;i<(1<<numBits);i++)
 	{
-		int distance = 0;
-		int newOnes = ones;
-		int newZeroes = zeroes;
+		bool ok = true;
 
-		for(int j=0;j<numBits;j++)
+		for(int k=0;k<solution.size();k++)
 		{
-			if((i & (1<<j)) && !(ones & (1<<j)))
+			int distance = 0;
+
+			for(int j=0;j<numBits;j++)
 			{
-				distance++;
-				newOnes |= (1<<j);
+				if((i & (1<<j)) && !(solution[k] & (1<<j)))
+					distance++;
+				else if(!(i & (1<<j)) && (solution[k] & (1<<j)))
+					distance++;
 			}
-			else if(!(i & (1<<j)) && !(zeroes & (1<<j)))
+
+			if(distance < minDistance)
 			{
-				distance++;
-				newZeroes |= (1<<j);
+				ok = false;
+				break;
 			}
 		}
 
-		if(distance < minDistance && depth != 0)
+		if(ok == false)
 			continue;
 
-		if(dfs(depth+1, newOnes, newZeroes, i+1))
-		{
-			solution.push_back(i);
+		solution.push_back(i);
+		if(dfs(solution, i+1))
 			return true;
-		}
+		else
+			solution.pop_back();
 	}
 
 	return false;
@@ -68,7 +69,25 @@ int main()
 
 	fscanf(fin, "%d %d %d", &numCodewords, &numBits, &minDistance);
 
-	dfs(0, 0, 0, 0);
+	vector<int> solution;
+	dfs(solution, 0);
+
+	int numbersThisLine = 0;
+	for(int i=0;i<solution.size();i++)
+	{
+		fprintf(fout, "%d", solution[i]);
+		numbersThisLine++;
+		if(numbersThisLine == 10 && i != solution.size()-1)
+		{
+			fprintf(fout, "\n");
+			numbersThisLine = 0;
+		}
+		else if(numbersThisLine < 10 && i != solution.size()-1)
+		{
+			fprintf(fout, " ");
+		}
+	}
+	fprintf(fout, "\n");
 
 	fclose(fout);
 	fclose(fin);
