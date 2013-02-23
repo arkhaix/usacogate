@@ -60,7 +60,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="ride.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ride.in" />
