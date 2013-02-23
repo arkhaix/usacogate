@@ -60,7 +60,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="numtri.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="numtri.in" />

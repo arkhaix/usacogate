@@ -61,7 +61,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="namenum.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dict.txt" />

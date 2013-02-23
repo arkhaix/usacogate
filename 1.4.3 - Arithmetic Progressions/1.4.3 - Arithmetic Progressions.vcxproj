@@ -60,7 +60,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="ariprog.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ariprog.in" />

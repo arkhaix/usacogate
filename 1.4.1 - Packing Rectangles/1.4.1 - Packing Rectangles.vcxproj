@@ -60,7 +60,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="packrec.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packrec.in" />
