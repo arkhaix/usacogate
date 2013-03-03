@@ -26,10 +26,7 @@ namespace Operator
 	{
 		Add = 0,
 		Subtract,
-		Multiply,
-		Divide,
 		Merge,
-		Ignore,
 
 		NumOperators
 	};
@@ -43,49 +40,43 @@ struct Operation
 
 int n;
 Operation ops[9];
+set<int> seen;
 
 int Eval()
 {
-	for(int i=0;i<n-1;i++)
+	int visitKey = 0;
+	for(int i=0;i<n;i++)
 	{
-		ops[i].operand += i+1;
-		if(ops[i].op == Operator::Merge)
+		ops[i].operand = i+1;
+
+		if(i != n-1)
 		{
-			ops[i].operand *= 10;
-			ops[i+1].operand += ops[i].operand;
-			ops[i].op = Operator::Ignore;
+			visitKey <<= 2;
+			visitKey += (int)ops[i].op;
 		}
 	}
-	ops[n-1].operand += n;
 
-	// ops is now suitable for printing
-	// but we need to make more modifications in order to calculate the total easily
-	// so copy it to a temporary buffer where that's safe
+	if(seen.find(visitKey) != seen.end())
+		return -1;
 
-	Operation evalOps[9];
-	for(int i=0;i<n;i++)
-		evalOps[i] = ops[i];
+	seen.insert(visitKey);
 
-	int startIndex = 0;
-	while(evalOps[startIndex].op == Operator::Ignore)
-		startIndex++;
-
-	Operation* currentOp = &evalOps[startIndex];
-	for(int i=startIndex+1;i<n;i++)
+	Operation* currentOp = &ops[0];
+	for(int i=1;i<n;i++)
 	{
-		if(evalOps[i].op == Operator::Ignore && i!=n-1)
-			continue;
-
 		if(currentOp->op == Operator::Add)
-			evalOps[i].operand += currentOp->operand;
+			ops[i].operand += currentOp->operand;
 		else if(currentOp->op == Operator::Subtract)
-			evalOps[i].operand = currentOp->operand - evalOps[i].operand;
-		else if(currentOp->op == Operator::Multiply)
-			evalOps[i].operand *= currentOp->operand;
-		else
-			evalOps[i].operand = currentOp->operand / evalOps[i].operand;
+			ops[i].operand = currentOp->operand - ops[i].operand;
+		else if(currentOp->op == Operator::Merge)
+		{
+			if(currentOp->operand >= 0)
+				ops[i].operand = (currentOp->operand*10) + ops[i].operand;
+			else
+				ops[i].operand = (currentOp->operand*10) - ops[i].operand;
+		}
 
-		currentOp = &evalOps[i];
+		currentOp = &ops[i];
 	}
 
 	return currentOp->operand;
@@ -95,21 +86,37 @@ void Print()
 {
 	for(int i=0;i<n-1;i++)
 	{
-		if(ops[i].op == Operator::Ignore)
-			continue;
+		printf("%d", i+1);
 
-		printf("%d", ops[i].operand);
 		if(ops[i].op == Operator::Add)
 			printf("+");
 		else if(ops[i].op == Operator::Subtract)
 			printf("-");
-		else if(ops[i].op == Operator::Multiply)
-			printf("*");
 		else
-			printf("/");
+			printf(" ");
 	}
 
-	printf("%d\n", ops[n-1].operand);
+	printf("%d\n", n);
+}
+
+void dfs(int index)
+{
+	if(index == n)
+	{
+		if(Eval() == 0)
+			Print();
+
+		return;
+	}
+
+	ops[index].op = Operator::Add;
+	dfs(index+1);
+
+	ops[index].op = Operator::Subtract;
+	dfs(index+1);
+
+	ops[index].op = Operator::Merge;
+	dfs(index+1);
 }
 
 int main() 
@@ -117,21 +124,22 @@ int main()
 	FILE *fin  = fopen("zerosum.in", "r");
 	FILE *fout = fopen("zerosum.out", "w");
 
-	//fscanf(fin, "%d", &n);
+	fscanf(fin, "%d", &n);
 
-	n = 4;
-	ops[0].op = Operator::Merge;
-	ops[1].op = Operator::Add;
-	ops[2].op = Operator::Merge;
+	dfs(0);
 
-	//n = 9;
-	//for(int i=0;i<9;i++)
-	//	ops[i].op = Operator::Multiply;
+	printf("--\n");
 
-	int x = Eval();
-	printf("%d\n", x);
+	n = 7;
+	ops[0].op = Operator::Subtract;
+	ops[1].op = Operator::Merge;
+	ops[2].op = Operator::Add;
+	ops[3].op = Operator::Add;
+	ops[4].op = Operator::Add;
+	ops[5].op = Operator::Add;
+	seen.clear();
+	Eval();
 
-	Print();
 
 	fclose(fout);
 	fclose(fin);
