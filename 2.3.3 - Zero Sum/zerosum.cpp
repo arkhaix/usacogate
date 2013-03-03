@@ -42,8 +42,12 @@ int n;
 Operation ops[9];
 set<int> seen;
 
+FILE* fout;
+
 int Eval()
 {
+	// Memo
+
 	int visitKey = 0;
 	for(int i=0;i<n;i++)
 	{
@@ -61,22 +65,45 @@ int Eval()
 
 	seen.insert(visitKey);
 
-	Operation* currentOp = &ops[0];
-	for(int i=1;i<n;i++)
-	{
-		if(currentOp->op == Operator::Add)
-			ops[i].operand += currentOp->operand;
-		else if(currentOp->op == Operator::Subtract)
-			ops[i].operand = currentOp->operand - ops[i].operand;
-		else if(currentOp->op == Operator::Merge)
-		{
-			if(currentOp->operand >= 0)
-				ops[i].operand = (currentOp->operand*10) + ops[i].operand;
-			else
-				ops[i].operand = (currentOp->operand*10) - ops[i].operand;
-		}
 
-		currentOp = &ops[i];
+	// Merge
+
+	for(int i=0;i<n-1;i++)
+	{
+		if(ops[i].op == Operator::Merge)
+		{
+			ops[i].operand *= 10;
+			ops[i+1].operand += ops[i].operand;
+		}
+	}
+
+	// ops is now suitable for printing
+	// but we need to make more modifications in order to calculate the total easily
+	// so copy it to a temporary buffer where that's safe
+
+	Operation evalOps[9];
+	for(int i=0;i<n;i++)
+		evalOps[i] = ops[i];
+
+	int startIndex = 0;
+	while(evalOps[startIndex].op == Operator::Merge && startIndex < n)
+		startIndex++;
+
+	if(startIndex == n)
+		return -1;
+
+	Operation* currentOp = &evalOps[startIndex];
+	for(int i=startIndex+1;i<n;i++)
+	{
+		if(evalOps[i].op == Operator::Merge && i!=n-1)
+			continue;
+
+		if(currentOp->op == Operator::Add)
+			evalOps[i].operand += currentOp->operand;
+		else if(currentOp->op == Operator::Subtract)
+			evalOps[i].operand = currentOp->operand - evalOps[i].operand;
+
+		currentOp = &evalOps[i];
 	}
 
 	return currentOp->operand;
@@ -86,17 +113,17 @@ void Print()
 {
 	for(int i=0;i<n-1;i++)
 	{
-		printf("%d", i+1);
+		fprintf(fout, "%d", i+1);
 
 		if(ops[i].op == Operator::Add)
-			printf("+");
+			fprintf(fout, "+");
 		else if(ops[i].op == Operator::Subtract)
-			printf("-");
+			fprintf(fout, "-");
 		else
-			printf(" ");
+			fprintf(fout, " ");
 	}
 
-	printf("%d\n", n);
+	fprintf(fout, "%d\n", n);
 }
 
 void dfs(int index)
@@ -109,37 +136,24 @@ void dfs(int index)
 		return;
 	}
 
+	ops[index].op = Operator::Merge;
+	dfs(index+1);
+
 	ops[index].op = Operator::Add;
 	dfs(index+1);
 
 	ops[index].op = Operator::Subtract;
-	dfs(index+1);
-
-	ops[index].op = Operator::Merge;
 	dfs(index+1);
 }
 
 int main() 
 {
 	FILE *fin  = fopen("zerosum.in", "r");
-	FILE *fout = fopen("zerosum.out", "w");
+	fout = fopen("zerosum.out", "w");
 
 	fscanf(fin, "%d", &n);
 
 	dfs(0);
-
-	printf("--\n");
-
-	n = 7;
-	ops[0].op = Operator::Subtract;
-	ops[1].op = Operator::Merge;
-	ops[2].op = Operator::Add;
-	ops[3].op = Operator::Add;
-	ops[4].op = Operator::Add;
-	ops[5].op = Operator::Add;
-	seen.clear();
-	Eval();
-
 
 	fclose(fout);
 	fclose(fin);
