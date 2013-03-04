@@ -20,48 +20,42 @@ using namespace std;
 int numNodes = 0;
 int treeHeight = 0;
 
-const int MOD = 9901;
-int twoExp[101] = {0};
+int memo[201][101];
 
-int twoExpN_choose_k(int n, int k)
+int Go(int nodesRemaining, int heightRemaining)
 {
-	return -1;
-}
+	if(memo[nodesRemaining][heightRemaining] >= 0 || memo[nodesRemaining][heightRemaining] == -2)
+		return memo[nodesRemaining][heightRemaining];
 
-int dfs(int depth, int totalNodesUsed, int parentNodesUsed)
-{
-	if(totalNodesUsed > numNodes-2 || depth > treeHeight)
+	if((nodesRemaining & 1) == 0)
 		return 0;
 
-	int maxAvailableNodes = numNodes - totalNodesUsed;
-	maxAvailableNodes = min(maxAvailableNodes, parentNodesUsed * 2);
+	if(nodesRemaining == 0)
+		return 0;
 
-	int parentDepth = depth-1;
-	int parentSlots = 1<<parentDepth;
+	if(heightRemaining <= 8 && nodesRemaining >= (1<<heightRemaining))
+	{
+		memo[nodesRemaining][heightRemaining] = -2;
+		return -2;
+	}
+
+	int childNodesRemaining = nodesRemaining - 1;	///<-1 for the current node
 
 	int res = 0;
 
-	if(depth == treeHeight)
+	for(int i=1;i<=childNodesRemaining-1;i+=2)
 	{
-		if(maxAvailableNodes != numNodes - totalNodesUsed)
-			return 0;
+		int left = Go(i, heightRemaining-1);
+		int right = Go(childNodesRemaining-i, heightRemaining-1);
 
-		//res = (2^parentDepth) choose (maxAvailableNodes/2), mod 9901
-		//res = parentNodesUsed choose (maxAvailableNodes/2), mod 9901
-	}
-	else
-	{
-		for(int n=2; n <= maxAvailableNodes; n+=2)
-		{
-			int childRes = dfs(depth+1, totalNodesUsed+n, n);
-			if(childRes == 0)
-				continue;
+		if(left < 0 || right < 0)
+			continue;
 
-			//int curRes = (2^parentDepth) choose (n/2), mod 9901;
-			//int curRes = parentNodesUsed choose (n/2), mod 9901;
-			//res += (curRes * childRes) mod 9901;
-		}
+		res += max(left, right);
+		res %= 9901;
 	}
+
+	memo[nodesRemaining][heightRemaining] = res;
 
 	return res;
 }
@@ -73,24 +67,13 @@ int main()
 
 	fscanf(fin, "%d %d", &numNodes, &treeHeight);
 
-	twoExp[0] = 1;
-	for(int i=1;i<=100;i++)
-		twoExp[i] = (twoExp[i-1] * 2) % MOD;
+	for(int i=0;i<=200;i++)
+		for(int j=0;j<=100;j++)
+			memo[i][j] = -1;
 
-	int fact[201] = {0};
-	fact[1] = 1;
-	for(int i=2;i<=200;i++)
-		fact[i] = (i * fact[i-1]) % MOD;
-	
-	if((numNodes%2) == 0 ||
-		treeHeight <= 8 && numNodes > (1<<treeHeight)-1 )
-	{
-		fprintf(fout, "0\n");
-	}
-	else
-	{
-		fprintf(fout, "%d\n", dfs(1, 1, 1));
-	}
+	memo[1][1] = 1;
+
+	fprintf(fout, "%d\n", Go(numNodes, treeHeight));
 
 	fclose(fout);
 	fclose(fin);
