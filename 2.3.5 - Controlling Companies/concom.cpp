@@ -21,36 +21,20 @@ using namespace std;
 int adjacency[101][101];
 int res[101][101] = {0};
 
-void bfs(int company)
+void Go(int owner, int child)
 {
-	stack<int> children;
+	if(child == owner)
+		return;
 
-	bool visited[101] = {false};
-
-	children.push(company);
-	while(children.empty() == false)
+	for(int i=0;i<101;i++)
 	{
-		int child = children.top();
-		children.pop();
-
-		if(visited[child] == true)
-			continue;
-
-		visited[child] = true;
-
-		for(int i=0;i<101;i++)
+		if(adjacency[child][i] > 0 && i != child && i != owner)
 		{
-			if(i == child)
-				continue;
-
-			if(adjacency[child][i] > 0)
-			{
-				res[company][i] += adjacency[child][i];
-				if(adjacency[child][i] > 50)
-					children.push(i);
-			}
+			res[owner][i] += adjacency[child][i];
+			if(res[owner][i] > 50 && res[owner][i] - adjacency[child][i] <= 50)
+				Go(owner, i);
 		}
-	};
+	}
 }
 
 int main()
@@ -77,8 +61,22 @@ int main()
 		companies.insert(companyB);
 	}
 
+	for(int i=0;i<101;i++)
+		for(int j=0;j<101;j++)
+			res[i][j] = (adjacency[i][j] > 0) ? adjacency[i][j] : 0;
+
 	for(set<int>::iterator iter = companies.begin(); iter != companies.end(); ++iter)
-		bfs(*iter);
+	{
+		int owner = *iter;
+		for(int i=0;i<101;i++)
+		{
+			if(i == owner)
+				continue;
+
+			if(adjacency[owner][i] > 50)
+				Go(owner, i);
+		}
+	}
 
 	for(int i=0;i<101;i++)
 		for(int j=0;j<101;j++)
