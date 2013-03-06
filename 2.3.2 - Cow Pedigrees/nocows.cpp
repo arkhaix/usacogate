@@ -17,6 +17,8 @@ LANG: C++
 
 using namespace std;
 
+const int MOD = 9901;
+
 int numNodes = 0;
 int treeHeight = 0;
 
@@ -24,20 +26,19 @@ int memo[201][101];
 
 int Go(int nodesRemaining, int heightRemaining)
 {
-	if(memo[nodesRemaining][heightRemaining] >= 0 || memo[nodesRemaining][heightRemaining] == -2)
+	if(memo[nodesRemaining][heightRemaining] >= 0)
 		return memo[nodesRemaining][heightRemaining];
 
-	if((nodesRemaining & 1) == 0)
-		return 0;
-
-	if(nodesRemaining == 0)
-		return 0;
-
-	if(heightRemaining <= 8 && nodesRemaining >= (1<<heightRemaining))
+	if((nodesRemaining & 1) == 0 ||
+		nodesRemaining == 0 ||
+		(heightRemaining <= 8 && nodesRemaining >= (1<<heightRemaining)) ||
+		nodesRemaining < (2*heightRemaining)-1
+		)
 	{
-		memo[nodesRemaining][heightRemaining] = -2;
-		return -2;
+		memo[nodesRemaining][heightRemaining] = 0;
+		return 0;
 	}
+
 
 	int childNodesRemaining = nodesRemaining - 1;	///<-1 for the current node
 
@@ -45,14 +46,27 @@ int Go(int nodesRemaining, int heightRemaining)
 
 	for(int i=1;i<=childNodesRemaining-1;i+=2)
 	{
-		int left = Go(i, heightRemaining-1);
-		int right = Go(childNodesRemaining-i, heightRemaining-1);
+		int left = Go(i, heightRemaining-1) % MOD;
+		int right = Go(childNodesRemaining-i, heightRemaining-1) % MOD;
 
-		if(left < 0 || right < 0)
-			continue;
+		int leftSubtrees = 0;
+		int rightSubtrees = 0;
+		for(int j=1;j<heightRemaining-1;j++)
+		{
+			leftSubtrees += Go(i, j);
+			leftSubtrees %= MOD;
+			rightSubtrees += Go(childNodesRemaining-i, j);
+			rightSubtrees %= MOD;
+		}
 
-		res += max(left, right);
-		res %= 9901;
+		res += left * rightSubtrees;
+		res %= MOD;
+
+		res += right * leftSubtrees;
+		res %= MOD;
+
+		res += left * right;
+		res %= MOD;
 	}
 
 	memo[nodesRemaining][heightRemaining] = res;
