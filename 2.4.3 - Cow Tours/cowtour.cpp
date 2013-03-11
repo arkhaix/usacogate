@@ -32,33 +32,38 @@ struct Pasture
 
 	Pasture()
 	{
-		x = y = field = 0;
+		x = 0;
+		y = 0;
+		field = -1;
 	}
 };
 
 int numPastures;
 Pasture pastures[150];
 int adjacency[150][150] = {0};
+double distances[150][150] = {0};
 
-vector<Pasture*> field0;
-vector<Pasture*> field1;
-double distance0[150][150] = {0.0};
-double distance1[150][150] = {0.0};
-
-void fill(int pastureIndex)
+struct Field
 {
-	if(pastures[pastureIndex].field == 1)
+	vector<Pasture*> pastures;
+};
+
+vector<Field> fields;
+
+void fill(int fieldIndex, int pastureIndex)
+{
+	if(pastures[pastureIndex].field != -1)
 		return;
 
-	pastures[pastureIndex].field = 1;
-	field1.push_back(&pastures[pastureIndex]);
+	pastures[pastureIndex].field = fieldIndex;
+	fields[fieldIndex].pastures.push_back(&pastures[pastureIndex]);
 
 	for(int i=0;i<numPastures;i++)
 		if(adjacency[pastureIndex][i])
-			fill(i);
+			fill(fieldIndex, i);
 }
 
-void dist(vector<Pasture*>&field, double (&dist)[150][150])
+void dist(vector<Pasture*>&field)
 {
 	int n = field.size();
 
@@ -66,29 +71,42 @@ void dist(vector<Pasture*>&field, double (&dist)[150][150])
 	{
 		for(int j=i;j<n;j++)
 		{
-			if(adjacency[ field[i]->adjacencyIndex ][ field[j]->adjacencyIndex ] != 0)
+			int ai = field[i]->adjacencyIndex;
+			int aj = field[j]->adjacencyIndex;
+
+			if(adjacency[ai][aj] != 0)
 			{
-				dist[i][j] = dist[j][i] = sqrt( 
+				distances[ai][aj] = distances[aj][ai] = sqrt( 
 				(field[i]->x - field[j]->x) * (field[i]->x - field[j]->x) +
 				(field[i]->y - field[j]->y) * (field[i]->y - field[j]->y) );
 			}
 			else
 			{
-				dist[i][j] = dist[j][i] = 1e10;
+				distances[ai][aj] = distances[aj][ai] = 1e10;
 			}
 		}
 	}
 }
 
-void fw(vector<Pasture*>& field, double (&dist)[150][150])
+void fw(vector<Pasture*>& field)
 {
 	int n = field.size();
 
 	for(int k=0;k<n;k++)
+	{
+		int ak = field[k]->adjacencyIndex;
 		for(int i=0;i<n;i++)
+		{
+			int ai = field[i]->adjacencyIndex;
 			for(int j=0;j<n;j++)
-				if(dist[i][j] > dist[i][k] + dist[k][j])
-					dist[i][j] = dist[i][k] + dist[k][j];
+			{
+				int aj = field[j]->adjacencyIndex;
+
+				if(distances[ai][aj] > distances[ai][ak] + distances[ak][aj])
+					distances[ai][aj] = distances[ai][ak] + distances[ak][aj];
+			}
+		}
+	}
 }
 
 int main() 
@@ -115,61 +133,95 @@ int main()
 	}
 
 
-	// Find the two fields
+	// Find all the fields
 
-	fill(0);
-
+	int fieldId = 0;
 	for(int i=0;i<numPastures;i++)
-		if(pastures[i].field == 0)
-			field0.push_back(&pastures[i]);
+	{
+		if(pastures[i].field == -1)
+		{
+			Field f;
+			fields.push_back(f);
+
+			fill(fieldId, i);
+			fieldId++;
+		}
+	}
 
 
 	// Find all-points min distances for the pastures in each field, separately
 	
-	dist(field0, distance0);
-	fw(field0, distance0);
+	for(unsigned int i=0;i<fields.size();i++)
+	{
+		dist(fields[i].pastures);
+		fw(fields[i].pastures);
+	}
 
-	dist(field1, distance1);
-	fw(field1, distance1);
 
-
-	// Connect each pair of points in the two fields, finding the maximal path
+	// Connect each pair of points in the separate fields, finding the maximal path
 	// in each iteration, and keeping track of the smallest maximal path
 
-	double res = 3e10;
+	double maxCombinedDist = 3e10;
 
-	for(unsigned int i=0;i<field0.size();i++)
+	for(unsigned int fieldA=0;fieldA<fields.size();fieldA++)
 	{
-		double maxDist0 = 0.0;
-		for(unsigned int k=0;k<field0.size();k++)
+		for(unsigned int fieldB=fieldA+1;fieldB<fields.size();fieldB++)
 		{
-			if(k == i)
-				continue;
-
-			maxDist0 = max(maxDist0, distance0[i][k]);
-		}
-
-		for(unsigned int j=0;j<field1.size();j++)
-		{
-			double maxDist1 = 0.0;
-			for(unsigned int k=0;k<field1.size();k++)
+			for(unsigned int i=0;i<fields[fieldA].pastures.size();i++)
 			{
-				if(k == j)
-					continue;
+				int ai = fields[fieldA].pastures[i]->adjacencyIndex;
 
-				maxDist1 = max(maxDist1, distance1[j][k]);
+				double maxDist0 = 0.0;
+				for(unsigned int k=0;k<fields[fieldA].pastures.size();k++)
+				{
+					if(k == i)
+						continue;
+
+					int ak = fields[fieldA].pastures[k]->adjacencyIndex;
+
+					maxDist0 = max(maxDist0, distances[ai][ak]);
+				}
+
+				for(unsigned int j=0;j<fields[fieldB].pastures.size();j++)
+				{
+					int aj = fields[fieldB].pastures[j]->adjacencyIndex;
+
+					double maxDist1 = 0.0;
+					for(unsigned int k=0;k<fields[fieldB].pastures.size();k++)
+					{
+						if(k == j)
+							continue;
+
+						int ak = fields[fieldB].pastures[k]->adjacencyIndex;
+
+						maxDist1 = max(maxDist1, distances[aj][ak]);
+					}
+
+					double curMaxDist = sqrt(
+						(fields[fieldA].pastures[i]->x - fields[fieldB].pastures[j]->x) * (fields[fieldA].pastures[i]->x - fields[fieldB].pastures[j]->x) +
+						(fields[fieldA].pastures[i]->y - fields[fieldB].pastures[j]->y) * (fields[fieldA].pastures[i]->y - fields[fieldB].pastures[j]->y)
+						);
+
+					curMaxDist += maxDist0 + maxDist1;
+
+					maxCombinedDist = min(maxCombinedDist, curMaxDist);
+				}
 			}
-
-			double curMaxDist = sqrt(
-				(field0[i]->x - field1[j]->x) * (field0[i]->x - field1[j]->x) +
-				(field0[i]->y - field1[j]->y) * (field0[i]->y - field1[j]->y)
-				);
-
-			curMaxDist += maxDist0 + maxDist1;
-
-			res = min(res, curMaxDist);
 		}
 	}
+
+
+	// Sometimes, a field can have a larger path within itself than any maximal 
+	// path resulting from combining two fields.
+	double res = 0.0;
+
+	for(unsigned int i=0;i<fields.size();i++)
+		for(unsigned int j=0;j<fields[i].pastures.size();j++)
+			for(unsigned int k=j+1;k<fields[i].pastures.size();k++)
+				res = max(res, distances[ fields[i].pastures[j]->adjacencyIndex ][ fields[i].pastures[k]->adjacencyIndex ]);
+
+	res = max(res, maxCombinedDist);
+
 
 	fprintf(fout, "%0.06f\n", res);
 
