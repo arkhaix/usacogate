@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "1.1.1 - Your Ride Is Here", "1.1.1 - Your Ride Is Here\1.1.1 - Your Ride Is Here.vcxproj", "{CECA5E93-AC12-40F3-8CC8-A56129842EBF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "1.1.2 - Greedy Gift Givers", "1.1.2 - Greedy Gift Givers\1.1.2 - Greedy Gift Givers.vcxproj", "{05F2269B-CCCE-4846-A05D-3DEF41766517}"
@@ -86,6 +86,18 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2.3.4 - Money Systems", "2.3.4 - Money Systems\2.3.4 - Money Systems.vcxproj", "{6C4DD44A-9B83-4816-8CF5-B3F4E547FDFA}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2.3.5 - Controlling Companies", "2.3.5 - Controlling Companies\2.3.5 - Controlling Companies.vcxproj", "{3FF7BC4E-A761-47C7-88D0-7F50F7FA44F3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2.4", "2.4", "{ECEFCDB4-387E-41EF-96D2-7F7B4E6F01DF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2.4.1 - The Tamworth Two", "2.4.1 - The Tamworth Two\2.4.1 - The Tamworth Two.vcxproj", "{262A423C-A911-4564-8837-DD860EC0988C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2.4.2 - Overfencing", "2.4.2 - Overfencing\2.4.2 - Overfencing.vcxproj", "{39B76343-CD25-4AF3-81D5-B1553BA08E5F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2.4.4 - Bessie Come Home", "2.4.4 - Bessie Come Home\2.4.4 - Bessie Come Home.vcxproj", "{4B517DD0-8FE8-401C-9C70-37A2A46501A3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2.4.5 - Fractions to Decimals", "2.4.5 - Fractions to Decimals\2.4.5 - Fractions to Decimals.vcxproj", "{78C5273B-576B-45B1-8843-57AF8261A76C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2.4.3 - Cow Tours", "2.4.3 - Cow Tours\2.4.3 - Cow Tours.vcxproj", "{4B808B93-88DC-43FB-B571-89FB172ECA8C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -233,6 +245,26 @@ Global
 		{3FF7BC4E-A761-47C7-88D0-7F50F7FA44F3}.Debug|Win32.Build.0 = Debug|Win32
 		{3FF7BC4E-A761-47C7-88D0-7F50F7FA44F3}.Release|Win32.ActiveCfg = Release|Win32
 		{3FF7BC4E-A761-47C7-88D0-7F50F7FA44F3}.Release|Win32.Build.0 = Release|Win32
+		{262A423C-A911-4564-8837-DD860EC0988C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{262A423C-A911-4564-8837-DD860EC0988C}.Debug|Win32.Build.0 = Debug|Win32
+		{262A423C-A911-4564-8837-DD860EC0988C}.Release|Win32.ActiveCfg = Release|Win32
+		{262A423C-A911-4564-8837-DD860EC0988C}.Release|Win32.Build.0 = Release|Win32
+		{39B76343-CD25-4AF3-81D5-B1553BA08E5F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{39B76343-CD25-4AF3-81D5-B1553BA08E5F}.Debug|Win32.Build.0 = Debug|Win32
+		{39B76343-CD25-4AF3-81D5-B1553BA08E5F}.Release|Win32.ActiveCfg = Release|Win32
+		{39B76343-CD25-4AF3-81D5-B1553BA08E5F}.Release|Win32.Build.0 = Release|Win32
+		{4B517DD0-8FE8-401C-9C70-37A2A46501A3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4B517DD0-8FE8-401C-9C70-37A2A46501A3}.Debug|Win32.Build.0 = Debug|Win32
+		{4B517DD0-8FE8-401C-9C70-37A2A46501A3}.Release|Win32.ActiveCfg = Release|Win32
+		{4B517DD0-8FE8-401C-9C70-37A2A46501A3}.Release|Win32.Build.0 = Release|Win32
+		{78C5273B-576B-45B1-8843-57AF8261A76C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{78C5273B-576B-45B1-8843-57AF8261A76C}.Debug|Win32.Build.0 = Debug|Win32
+		{78C5273B-576B-45B1-8843-57AF8261A76C}.Release|Win32.ActiveCfg = Release|Win32
+		{78C5273B-576B-45B1-8843-57AF8261A76C}.Release|Win32.Build.0 = Release|Win32
+		{4B808B93-88DC-43FB-B571-89FB172ECA8C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4B808B93-88DC-43FB-B571-89FB172ECA8C}.Debug|Win32.Build.0 = Debug|Win32
+		{4B808B93-88DC-43FB-B571-89FB172ECA8C}.Release|Win32.ActiveCfg = Release|Win32
+		{4B808B93-88DC-43FB-B571-89FB172ECA8C}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -273,5 +305,10 @@ Global
 		{2F51A9AB-3E11-4C9F-B09A-3BA666BAD02F} = {AA2ACD35-B54B-4F47-AFBA-87EC85B15A3A}
 		{6C4DD44A-9B83-4816-8CF5-B3F4E547FDFA} = {AA2ACD35-B54B-4F47-AFBA-87EC85B15A3A}
 		{3FF7BC4E-A761-47C7-88D0-7F50F7FA44F3} = {AA2ACD35-B54B-4F47-AFBA-87EC85B15A3A}
+		{262A423C-A911-4564-8837-DD860EC0988C} = {ECEFCDB4-387E-41EF-96D2-7F7B4E6F01DF}
+		{39B76343-CD25-4AF3-81D5-B1553BA08E5F} = {ECEFCDB4-387E-41EF-96D2-7F7B4E6F01DF}
+		{4B517DD0-8FE8-401C-9C70-37A2A46501A3} = {ECEFCDB4-387E-41EF-96D2-7F7B4E6F01DF}
+		{78C5273B-576B-45B1-8843-57AF8261A76C} = {ECEFCDB4-387E-41EF-96D2-7F7B4E6F01DF}
+		{4B808B93-88DC-43FB-B571-89FB172ECA8C} = {ECEFCDB4-387E-41EF-96D2-7F7B4E6F01DF}
 	EndGlobalSection
 EndGlobal
