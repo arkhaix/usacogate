@@ -26,37 +26,25 @@ struct Denomination
 	int value;
 };
 
-bool DenominationsByWeight(const Denomination& lhs, const Denomination& rhs)
+bool DenominationsByValuePerWeight(const Denomination& lhs, const Denomination& rhs)
 {
-	return lhs.weight < rhs.weight;
+	return ((double)lhs.value / (double)lhs.weight) < ((double)rhs.value / (double)rhs.weight);
 }
 
 int knapSize;
 int numDenominations;
 vector<Denomination> denominations;
 
-map< pair<int, int>, int > memo;
-
 int Go(int weightRemaining, int maxDenomination)
 {
-	int res = 0;
-
-	if(weightRemaining == 0)
-		return 0;
-
-	map< pair<int, int>, int >::iterator iter = memo.find( make_pair(weightRemaining, maxDenomination) );
-	if(iter != memo.end())
-		return iter->second;
-
-	for(int i=0;i<=maxDenomination;i++)
+	for(int i=maxDenomination;i>=0;i--)
 	{
 		int remaining = weightRemaining - denominations[i].weight;
 		if(remaining >= 0)
-			res = max(res, denominations[i].value + Go(remaining, i));
+			return denominations[i].value + Go(remaining, i);
 	}
 
-	memo[ make_pair(weightRemaining, maxDenomination) ] = res;
-	return res;
+	return 0;
 }
 
 int main() 
@@ -73,7 +61,7 @@ int main()
 		denominations.push_back(d);
 	}
 
-	sort(denominations.begin(), denominations.end(), DenominationsByWeight);
+	sort(denominations.begin(), denominations.end(), DenominationsByValuePerWeight);
 
 	fprintf(fout, "%d\n", Go(knapSize, denominations.size()-1));
 
