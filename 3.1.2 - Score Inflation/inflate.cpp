@@ -22,29 +22,13 @@ using namespace std;
 
 struct Denomination
 {
-	int weight;
-	int value;
+	unsigned int weight;
+	unsigned int value;
 };
 
-bool DenominationsByValuePerWeight(const Denomination& lhs, const Denomination& rhs)
+bool DenominationsByWeight(const Denomination& lhs, const Denomination& rhs)
 {
-	return ((double)lhs.value / (double)lhs.weight) < ((double)rhs.value / (double)rhs.weight);
-}
-
-int knapSize;
-int numDenominations;
-vector<Denomination> denominations;
-
-int Go(int weightRemaining, int maxDenomination)
-{
-	for(int i=maxDenomination;i>=0;i--)
-	{
-		int remaining = weightRemaining - denominations[i].weight;
-		if(remaining >= 0)
-			return denominations[i].value + Go(remaining, i);
-	}
-
-	return 0;
+	return lhs.weight < rhs.weight;
 }
 
 int main() 
@@ -52,18 +36,34 @@ int main()
 	FILE *fin  = fopen("inflate.in", "r");
 	FILE *fout = fopen("inflate.out", "w");
 
+	unsigned int knapSize;
+	unsigned int numDenominations;
+	vector<Denomination> denominations;
+
 	fscanf(fin, "%d %d", &knapSize, &numDenominations);
 
-	for(int i=0;i<numDenominations;i++)
+	for(unsigned int i=0;i<numDenominations;i++)
 	{
 		Denomination d;
 		fscanf(fin, "%d %d", &d.value, &d.weight);
 		denominations.push_back(d);
 	}
 
-	sort(denominations.begin(), denominations.end(), DenominationsByValuePerWeight);
+	sort(denominations.begin(), denominations.end(), DenominationsByWeight);
 
-	fprintf(fout, "%d\n", Go(knapSize, denominations.size()-1));
+	unsigned int dp[10001] = {0};
+	for(unsigned int i=0;i<=knapSize;i++)
+	{
+		for(unsigned int j=0;j<denominations.size();j++)
+		{
+			if(denominations[j].weight > i)
+				break;
+
+			dp[i] = max(dp[i], dp[i - denominations[j].weight] + denominations[j].value);
+		}
+	}
+
+	fprintf(fout, "%d\n", dp[knapSize]);
 
 	fclose(fout);
 	fclose(fin);
