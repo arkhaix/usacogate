@@ -20,6 +20,37 @@ LANG: C++
 using namespace std;
 
 
+/*
+	This whole HumbleNumber object exists so that we can reverse-sort the priority_queue.
+	priority_queue doesn't have a comparator parameter; it always uses operator<
+	and it always returns the greatest element first.  We need to reverse it so that
+	it returns the smallest element first.
+*/
+struct HumbleNumber
+{
+	int Value;
+
+	/*implicit*/ HumbleNumber(int n)
+	{
+		Value = n;
+	}
+
+	operator int() const
+	{
+		return Value;
+	}
+
+	bool operator==(int rhs) const
+	{
+		return Value == rhs;
+	}
+};
+
+bool operator<(const HumbleNumber& lhs, const HumbleNumber& rhs)
+{
+	return rhs.Value < lhs.Value;
+}
+
 int main() 
 {
 	FILE *fin  = fopen("humble.in", "r");
@@ -28,47 +59,29 @@ int main()
 	int numPrimes, nthHumble;
 	fscanf(fin, "%d %d", &numPrimes, &nthHumble);
 
-	int minPrime = INT_MAX;
-
 	int primes[100] = {0};
-	set<int> humbleNumbers;
+	priority_queue<HumbleNumber> humbleNumbers;
 	for(int i=0;i<numPrimes;i++)
-	{
 		fscanf(fin, "%d", &primes[i]);
-		humbleNumbers.insert(primes[i]);
 
-		minPrime = min(minPrime, primes[i]);
-	}
+	int nextHumble = 1;
+	humbleNumbers.push(nextHumble);
 
-	humbleNumbers.insert(1);
-
-	int numHumble = 1;
-	int current = minPrime;
-	while(numHumble != nthHumble)
+	for(int i=0;i<nthHumble;i++)
 	{
-		int nextPotentialHumble = INT_MAX;
-		int primeFactor;
+		nextHumble = humbleNumbers.top();
+		while(humbleNumbers.empty() == false && humbleNumbers.top() == nextHumble)
+			humbleNumbers.pop();
 
 		for(int j=0;j<numPrimes;j++)
 		{
-			int a = current + primes[j] - (current % primes[j]);
-			if(a < nextPotentialHumble)
-			{
-				nextPotentialHumble = a;
-				primeFactor = primes[j];
-			}
-		}
-
-		current = nextPotentialHumble;
-		int quotient = current / primeFactor;
-		if(humbleNumbers.find(quotient) != humbleNumbers.end())
-		{
-			numHumble++;
-			humbleNumbers.insert(current);
+			long long n = (long long)nextHumble * (long long)primes[j];
+			if(n < (long long)INT_MAX)
+				humbleNumbers.push(n);
 		}
 	}
 
-	fprintf(fout, "%d\n", current);
+	fprintf(fout, "%d\n", humbleNumbers.top());
 
 	fclose(fout);
 	fclose(fin);
