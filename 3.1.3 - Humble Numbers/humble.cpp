@@ -67,7 +67,6 @@ int main()
 	int nextHumble = 1;
 	humbleNumbers.push(nextHumble);
 
-	set<int> humbleSet;
 	int setSize = 0;
 	int maxHumble = 0;
 
@@ -75,7 +74,10 @@ int main()
 	{
 		nextHumble = humbleNumbers.top();
 		while(humbleNumbers.empty() == false && humbleNumbers.top() == nextHumble)
+		{
 			humbleNumbers.pop();
+			setSize--;
+		}
 
 		int numHumblesToGo = nthHumble - i;
 
@@ -83,10 +85,8 @@ int main()
 		{
 			long long n = (long long)nextHumble * (long long)primes[j];
 			if(n > nextHumble && n < (long long)INT_MAX && 
-				(setSize < numHumblesToGo || n < maxHumble) &&
-				humbleSet.find(n) == humbleSet.end())
+				(setSize < numHumblesToGo*5 || n < maxHumble))
 			{
-				humbleSet.insert(n);
 				humbleNumbers.push(n);
 				setSize++;
 				maxHumble = max(maxHumble, (int)n);
