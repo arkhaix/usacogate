@@ -27,12 +27,12 @@ struct Node
 	Node* child[2];
 	Node* parent;
 
-	void RootAdd(const char* str, int length, int scoreStartLength)
+	void RootAdd(const char* str, int minLength, int maxLength)
 	{
-		if(length <= 0)
+		if(maxLength <= 0)
 			return;
 
-		if(*str == 0)
+		if(str == 0 || *str == 0)
 			return;
 
 		int index = *str - '0';
@@ -46,13 +46,32 @@ struct Node
 			child[index]->value = *str;
 		}
 
-		child[index]->Add(str, length, scoreStartLength);
+		child[index]->Add(str, minLength, maxLength);
 	}
 
-	void Add(const char* str, int length, int scoreStartLength)
+	void Add(const char* str, int minLength, int maxLength)
 	{
-		if(length <= 0)
+		// Exit conditions
+
+		if(maxLength <= 0)
 			return;
+
+		if(str == 0 || *str == 0)
+			return;
+
+
+		// Account for this node
+
+		minLength--;
+		maxLength--;
+
+		if(minLength <= 0)
+			score++;
+
+
+		// Recurse on the relevant child node, if any
+
+		++str;
 
 		if(*str == 0)
 			return;
@@ -61,12 +80,6 @@ struct Node
 		if(index < 0 || index > 1)
 			return;
 
-		if(scoreStartLength > 0)
-			scoreStartLength--;
-
-		if(scoreStartLength <= 0)
-			score++;
-
 		if(child[index] == 0)
 		{
 			child[index] = new Node();
@@ -74,10 +87,7 @@ struct Node
 			child[index]->value = *str;
 		}
 
-		length--;
-		str++;
-
-		child[index]->Add(str, length, scoreStartLength);
+		child[index]->Add(str, minLength, maxLength);
 	}
 
 	string ToString()
@@ -125,7 +135,7 @@ void Visit(Node* node)
 	while(resSize > numOutputs)
 	{
 		set<ScoredNode>::iterator iter = res.begin();
-		//res.erase(iter);
+		res.erase(iter);
 		resSize--;
 	}
 	
@@ -155,7 +165,8 @@ int main()
 			break;
 
 		int len = strlen(tmp);
-		tmp[len-1] = 0;
+		if(tmp[len-1] == '\n')
+			tmp[len-1] = 0;
 
 		strcat(str, tmp);
 	}
@@ -164,7 +175,7 @@ int main()
 
 	Node root;
 	for(int i=0;i<len;i++)
-		root.Add(&str[i], maxLength, minLength);
+		root.RootAdd(&str[i], minLength, maxLength);
 
 	Visit(&root);
 
