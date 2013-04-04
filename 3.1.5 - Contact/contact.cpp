@@ -118,26 +118,28 @@ struct ScoredNode
 
 bool operator<(const ScoredNode& lhs, const ScoredNode& rhs)
 {
-	return lhs.node->score < rhs.node->score;
+	if(lhs.node->score != rhs.node->score)
+		return lhs.node->score < rhs.node->score;
+
+	string lhsStr = lhs.node->ToString();
+	string rhsStr = rhs.node->ToString();
+
+	if(lhsStr.length() != rhsStr.length())
+		return lhsStr.length() < rhsStr.length();
+
+	int cmp = lhsStr.compare(rhsStr);
+	return cmp < 0;
 }
 
-multiset<ScoredNode> res;
-int resSize = 0;
+map<int, vector<ScoredNode> > res;
 int numOutputs;
 
 void Visit(Node* node)
 {
 	ScoredNode s(node);
 
-	res.insert(s);
-	resSize++;
-	
-	while(resSize > numOutputs)
-	{
-		set<ScoredNode>::iterator iter = res.begin();
-		res.erase(iter);
-		resSize--;
-	}
+	if(node->score > 0)
+		res[node->score].push_back(s);
 	
 	if(node->child[0] != 0)
 		Visit(node->child[0]);
@@ -179,8 +181,46 @@ int main()
 
 	Visit(&root);
 
-	for(set<ScoredNode>::iterator iter = res.begin(); iter != res.end(); ++iter)
-		fprintf(fout, "%d: %s\n", (*iter).node->score, (*iter).node->ToString().c_str());
+	map<int, vector<ScoredNode> >::iterator iter = res.end();
+	int frequenciesPrinted = 0;
+	while(true)
+	{
+		bool lastFrequency = false;
+
+		--iter;
+		if(iter == res.begin())
+			lastFrequency = true;
+
+		frequenciesPrinted++;
+		if(frequenciesPrinted >= numOutputs)
+			lastFrequency = true;
+
+		fprintf(fout, "%d\n", iter->first);
+
+		sort(iter->second.begin(), iter->second.end());
+
+		int patternsPrinted = 0;
+		for(unsigned int i=0;i<iter->second.size();i++)
+		{
+			fprintf(fout, "%s", iter->second[i].node->ToString().c_str());
+
+			patternsPrinted++;
+			if(patternsPrinted == 6 && i != iter->second.size()-1)
+			{
+				fprintf(fout, "\n");
+				patternsPrinted = 0;
+			}
+			else if(i != iter->second.size()-1)
+			{
+				fprintf(fout, " ");
+			}
+		}
+
+		fprintf(fout, "\n");
+
+		if(lastFrequency == true)
+			break;
+	}
 
 	fclose(fout);
 	fclose(fin);
