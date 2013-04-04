@@ -27,6 +27,13 @@ struct Node
 	Node* child[2];
 	Node* parent;
 
+	~Node()
+	{
+		for(int i=0;i<2;i++)
+			if(child[i] != 0)
+				delete child[i];
+	}
+
 	void RootAdd(const char* str, int minLength, int maxLength)
 	{
 		if(maxLength <= 0)
